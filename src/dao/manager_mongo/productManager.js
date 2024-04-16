@@ -57,7 +57,13 @@ class ProductManager {
   addProduct = async (product) => {
     const { title, description, price, code, stock, category } = product;
     if (!title || !description || !price || !code || !stock || !category) {
-      throw new IncompleteFields();
+      throw new IncompleteFields(
+        `- ${title ? "" : "title - "} ${description ? "" : "description - "}${
+          price ? "" : "price - "
+        }${code ? "" : "code - "}${stock ? "" : "stock - "}${
+          category ? "" : "category - "
+        }`
+      );
     }
     let exists = await productSchema.findOne({ code: product.code });
     if (exists) {
@@ -73,7 +79,11 @@ class ProductManager {
   updateProduct = async (productId, updates) => {
     const { title, description, price, stock, category } = updates;
     if (!title || !description || !price || !stock || !category) {
-      throw new IncompleteFields();
+      throw new IncompleteFields(
+        `- ${title ? "" : "title - "} ${description ? "" : "description - "}${
+          price ? "" : "price - "
+        }${stock ? "" : "stock - "}${category ? "" : "category - "}`
+      );
     }
     const product = await productSchema.findById(productId);
     if (!product) {

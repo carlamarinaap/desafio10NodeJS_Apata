@@ -30,7 +30,7 @@ export async function addProduct(req, res) {
     res.status(201).send(`Se agregó el producto ${product.title}`);
   } catch (error) {
     if (error instanceof IncompleteFields) {
-      res.status(400).send(`Debe completar todos los campos`);
+      res.status(400).send(`Debe completar todos los campos: ${error.message}`);
     } else {
       if (error instanceof DuplicateCode) {
         res.status(400).send(`Ya existe un producto con el código proporcionado`);
