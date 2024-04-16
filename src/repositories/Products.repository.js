@@ -1,4 +1,6 @@
 import ProductDTO from "../dao/dto/products.dto.js";
+import productSchema from "../dao/models/product.schema.js";
+import { DuplicateCode, IncompleteFields } from "../test/customError.js";
 
 export default class ProductRepository {
   constructor(dao) {

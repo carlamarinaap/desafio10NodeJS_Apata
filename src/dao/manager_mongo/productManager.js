@@ -1,5 +1,6 @@
 import { port } from "../../app.js";
-import ProductSchema from "../models/product.schema.js";
+import { DuplicateCode, IncompleteFields, NotFound } from "../../test/customError.js";
+import productSchema from "../models/product.schema.js";
 
 class ProductManager {
   getProducts = async (data) => {
@@ -21,7 +22,7 @@ class ProductManager {
         sortQuery = { price: sort === "asc" ? 1 : -1 };
       }
 
-      const result = await ProductSchema.paginate(query, {
+      const result = await productSchema.paginate(query, {
         limit: limit,
         page: page,
         lean: true,
@@ -45,42 +46,48 @@ class ProductManager {
   };
 
   getProductById = async (productId) => {
-    try {
-      return await ProductSchema.findById(productId);
-    } catch (error) {
-      throw new Error(`Error al encontrar el producto`);
+    const product = await productSchema.findById(productId);
+    if (product) {
+      return product;
+    } else {
+      throw new NotFound();
     }
   };
 
   addProduct = async (product) => {
-    if (!product) {
-      throw new Error(`Debe tener todos los campos completos`);
+    const { title, description, price, code, stock, category } = product;
+    if (!title || !description || !price || !code || !stock || !category) {
+      throw new IncompleteFields();
     }
-    let exists = await ProductSchema.findOne({ code: product.code });
+    let exists = await productSchema.findOne({ code: product.code });
     if (exists) {
-      throw new Error(`Ya existe un producto con el código ${product.code}`);
+      throw new DuplicateCode();
     }
-    try {
-      return new ProductSchema(product).save();
-    } catch (error) {
-      throw new Error(`Error al agregar producto: ${error.message}`);
+    const newProduct = await new productSchema(product).save();
+    if (!newProduct) {
+      throw new Error(`No se pudo guardar el nuevo producto: ${error.message}`);
     }
+    return newProduct;
   };
 
   updateProduct = async (productId, updates) => {
-    try {
-      await ProductSchema.updateOne({ _id: productId }, updates);
-      return ProductSchema.findById(productId);
-    } catch (error) {
-      throw new Error(`Error al actualizar el producto: ${error.message}`);
+    const { title, description, price, stock, category } = updates;
+    if (!title || !description || !price || !stock || !category) {
+      throw new IncompleteFields();
     }
+    const product = await productSchema.findById(productId);
+    if (!product) {
+      throw new NotFound();
+    }
+    return await productSchema.updateOne({ _id: productId }, updates);
   };
 
   deleteProduct = async (productId) => {
-    try {
-      return await ProductSchema.deleteOne({ _id: productId });
-    } catch (error) {
-      throw new Error(`Error al eliminar producto `);
+    const product = await productSchema.findById(productId);
+    if (product) {
+      return await productSchema.deleteOne({ _id: productId });
+    } else {
+      throw new NotFound();
     }
   };
 }

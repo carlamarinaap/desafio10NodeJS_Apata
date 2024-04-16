@@ -20,9 +20,9 @@ export const generateProducts = () => {
     title: faker.commerce.productName(),
     description: faker.commerce.productDescription(),
     price: faker.commerce.price(),
-    thumbnails: faker.helpers.arrayElement([1, 2, 3]),
+    thumbnails: [],
     code: faker.string.alphanumeric({ length: { min: 4, max: 12 } }),
-    stock: faker.number.int(),
+    stock: faker.number.int(99),
     category: faker.commerce.productMaterial(),
     status: faker.datatype.boolean(),
   };

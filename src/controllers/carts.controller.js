@@ -1,4 +1,5 @@
 import CartManager from "../dao/manager_mongo/cartsManager.js";
+import { NotFound } from "../test/customError.js";
 
 const cm = new CartManager();
 export async function getCarts(req, res) {
@@ -15,7 +16,11 @@ export async function getCartById(req, res) {
     const cart = await cm.getCartById(req.params.cid);
     res.status(200).send(cart);
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error instanceof NotFound) {
+      res.status(404).send(`No se encontró el carrito`);
+    } else {
+      res.status(500).send(error.message);
+    }
   }
 }
 
@@ -33,7 +38,11 @@ export async function addProductInCart(req, res) {
     await cm.updateCart(req.params.cid, req.params.pid);
     res.status(200).send("Producto añadido al carrito");
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error instanceof NotFound) {
+      res.status(404).send(error.message);
+    } else {
+      res.status(500).send(error.message);
+    }
   }
 }
 
@@ -42,7 +51,11 @@ export async function deleteProduct(req, res) {
     await cm.deleteProduct(req.params.cid, req.params.pid);
     res.status(200).send("Producto eliminado del carrito");
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error instanceof NotFound) {
+      res.status(404).send(error.message);
+    } else {
+      res.status(500).send(error.message);
+    }
   }
 }
 
@@ -51,7 +64,11 @@ export async function cleanCartById(req, res) {
     await cm.cleanCartById(req.params.cid);
     res.status(200).send("Se vació el carrito");
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error instanceof NotFound) {
+      res.status(404).send(error.message);
+    } else {
+      res.status(500).send(error.message);
+    }
   }
 }
 
@@ -60,7 +77,11 @@ export async function updateProductsInCart(req, res) {
     await cm.updateProductsInCart(req.params.cid, req.body);
     res.status(200).send("Carrito actualizado");
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error instanceof NotFound) {
+      res.status(404).send(error.message);
+    } else {
+      res.status(500).send(error.message);
+    }
   }
 }
 
@@ -69,7 +90,11 @@ export async function updateProductsQuantityInCart(req, res) {
     await cm.updateProductsQuantityInCart(req.params.cid, req.params.pid, req.body);
     res.status(200).send("Cantidad de productos actualizados en el carrito");
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error instanceof NotFound) {
+      res.status(404).send(error.message);
+    } else {
+      res.status(500).send(error.message);
+    }
   }
 }
 
@@ -78,6 +103,10 @@ export async function purchase(req, res) {
     await cm.purchase(req.params.cid);
     res.status(200).send("Compra realizada con éxito");
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error instanceof NotFound) {
+      res.status(404).send(error.message);
+    } else {
+      res.status(500).send(error.message);
+    }
   }
 }
